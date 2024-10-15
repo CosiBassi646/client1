@@ -10,75 +10,51 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws UnknownHostException, IOException {
-        System.out.println("client partito!");
+        System.out.println("Client partito!");
         Socket s = new Socket("localhost", 3000);
-        System.out.println("il client si è collegato");
+        System.out.println("Il client si è collegato");
 
         DataOutputStream out = new DataOutputStream(s.getOutputStream());
-        BufferedReader inDalServer = new BufferedReader(new InputStreamReader(s.getInputStream()));//risposta del server
+        BufferedReader inDalServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
         Scanner in = new Scanner(System.in);
-        Scanner inScelta = new Scanner(System.in);
 
-        System.out.println("--------menù--------");
-        System.out.println("premi 1 per vedere la stringa in maiuscolo \n");
-        System.out.println("premi 2 per Trasformare stringa in minuscolo \n");
-        System.out.println("premi 3 per  Ribaltare i caratteri della string \n");
-        System.out.println("premi 4 per Contare il numero di caratteri \n");
-        System.out.println("premi 0 per disconettere il client dal server \n");
-        //invio la stringa
-        System.out.println("scrivi la stringa da passare: ");
-        String stringaDaInviare = in.nextLine();
-        out.writeBytes(stringaDaInviare + "\n");
-       // invio la mia scelta al server
-        System.out.println("compiere una scelta: ");
-        String scelta = inScelta.nextLine();
-        out.writeBytes(scelta + "\n");
+        String scelta;
+
         do {
-            
-            
-            switch (scelta) {      
-                case "1":
-                // risposta dal server
-                String stringaRicevuta = inDalServer.readLine();
-                System.out.println("Risposta dal server: " + stringaRicevuta);
-                System.out.println("compiere una scelta: ");
-                scelta = inScelta.nextLine();
-                break;
+            // Mostra il menù
+            System.out.println("--------MENÙ--------");
+            System.out.println("Premi 1 per vedere la stringa in maiuscolo");
+            System.out.println("Premi 2 per trasformare la stringa in minuscolo");
+            System.out.println("Premi 3 per ribaltare i caratteri della stringa");
+            System.out.println("Premi 4 per contare il numero di caratteri");
+            System.out.println("Premi 0 per disconnettere il client dal server");
 
-                case "2":
-                String r2 = inDalServer.readLine();
-                System.out.println("Risposta dal server: " + r2);
-                System.out.println("compiere una scelta: ");
-                scelta = inScelta.nextLine();
-                break;
+            // invia la scelta al server
+            System.out.print("Compiere una scelta: ");
+            scelta = in.nextLine();
+            if(scelta.equals("0") == false && scelta.equals("1") == false && scelta.equals("2") == false && scelta.equals("3") == false && scelta.equals("4") == false ){
+                System.out.println("inserisci una scelta valida!");   
+            }else{
+                out.writeBytes(scelta + "\n");  
 
-                case "3":
-                String r3 = inDalServer.readLine();
-                System.out.println("Risposta dal server: " + r3);
-                System.out.println("compiere una scelta: ");
-                scelta = inScelta.nextLine();
+                // Se la scelta non è "0", chiedi la stringa solo per le scelte rilevanti
+                if (scelta.equals("0") == false) {
+                    System.out.print("Inserisci la stringa: ");
+                    String stringaDaInviare = in.nextLine();
+                    out.writeBytes(stringaDaInviare + "\n");  // Invia la stringa al server
+    
+                    // Ricevi la risposta dal server
+                    String risultatoOperazione = inDalServer.readLine();
+                    System.out.println("Risposta dal server: " + risultatoOperazione);
+                }
+            }
+    
 
-                case "4":
-                String r4 = inDalServer.readLine();
-                System.out.println("Risposta dal server: " + r4);
-                System.out.println("compiere una scelta: ");
-                scelta = inScelta.nextLine();
+        } while (!scelta.equals("0"));
 
-                case "0":
-                s.close();
-                in.close();
-                inScelta.close();
-                System.out.println("FINE CONNESSIONE");
-                break;
-
-                default:
-                    System.out.println("scelta non valida");
-                    System.out.println("compiere una scelta: ");
-                    scelta = inScelta.nextLine();
-                    break;
-            }           
-        } while (scelta.equals("0") == false);
-        
-        
+        // Chiudi la connessione e gli stream
+        System.out.println("FINE CONNESSIONE");
+        s.close();
+        in.close();
     }
 }
